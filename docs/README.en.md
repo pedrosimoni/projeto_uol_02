@@ -283,5 +283,4 @@ We can see that after running the command, the program started sending notificat
 
 - [Amazon Virtual Private Cloud (VPC) Documentation](https://docs.aws.amazon.com/vpc/?icmpid=docs_homepage_featuredsvcs)
 - [Amazon Elastic Compute Cloud (Amazon EC2) Documentation](https://docs.aws.amazon.com/ec2/?icmpid=docs_homepage_featuredsvcs)
-- [nginx Documentation](https://nginx.org/en/docs/)
 - [Cron Jobs Configuration and Usage Guide](https://www.pantz.org/software/cron/croninfo)
