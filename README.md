@@ -1,8 +1,8 @@
 # Projeto 1 - Compass
 
-## Etapa 1 - Configuração do Ambiente
 
-### Criação da VPC
+
+
 
 Somente com IPv4 - 10.0.0.0/16
 
@@ -93,17 +93,11 @@ sudo systemctl enable nginx
 sudo touch /var/www/html/pb-jun-2025.html
 ```
 
-Configurar o seguinte site (```/etc/nginx/sites-available/pb-jun-2025```):
+Adicionar a seguinte linha em */etc/nginx/sites-available/default*:
 ```sh
-server{
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index pb-jun-2025.html;
-    location / {
-        try_files $uri $uri/ = 404;
+    location = /pb-jun-2025 {
+            try_files /pb-jun-2025.html =404;
     }
-}
 ```
 
 Ativar o site:

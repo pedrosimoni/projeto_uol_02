@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Projeto DevSecOps: Servidor Web Monitorado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ece9e6, #ffffff); /* Gradiente suave */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 960px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Sombra mais pronunciada */
+            border-top: 5px solid #4CAF50; /* Linha de destaque verde */
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1, h2 {
+            color: #2196F3; /* Azul vibrante */
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-top: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px 0;
+            border-bottom: 1px dashed #eee; /* Linha tracejada suave */
+        }
+        .section:last-of-type {
+            border-bottom: none;
+        }
+        .info-box {
+            background-color: #e3f2fd; /* Azul clarinho para caixas de informação */
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #2196F3;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+        .info-box p {
+            margin: 8px 0;
+        }
+        .info-box strong {
+            color: #0d47a1;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 25px;
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .project-overview p {
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+        .call-to-action {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .call-to-action a {
+            display: inline-block;
+            background-color: #4CAF50; /* Verde */
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .call-to-action a:hover {
+            background-color: #43A047;
+            transform: translateY(-3px);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.85em;
+            color: #777;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .footer a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meu Projeto DevSecOps na AWS</h1>
+        <p style="text-align: center; font-style: italic; color: #666;">Uma demonstração prática de servidor web monitorado</p>
+
+        <div class="section">
+            <h2>Quem Sou Eu?</h2>
+            <div class="info-box">
+                <p><strong>Nome:</strong> [Seu Nome Completo]</p>
+                <p><strong>Minha Missão:</strong> Bolsista DevSecOps - Compass.uol</p>
+                <p><strong>Email:</strong> <a href="mailto:[Seu Email]">[Seu Email]</a></p>
+                <p><strong>LinkedIn:</strong> <a href="[Link para seu LinkedIn]" target="_blank">Meu Perfil no LinkedIn</a></p>
+                <p><strong>GitHub:</strong> <a href="[Link para seu GitHub]" target="_blank">Meu GitHub</a></p>
+            </div>
+            <p>Seja bem-vindo(a) à página do meu projeto! Aqui, você poderá conhecer um pouco sobre o trabalho que desenvolvi no Programa de Bolsas DevSecOps da Compass.uol, focado em construir e monitorar um servidor web na nuvem.</p>
+        </div>
+
+        <div class="section project-overview">
+            <h2>Sobre Este Projeto</h2>
+            <p>Este projeto é uma jornada prática para configurar um servidor Nginx na Amazon Web Services (AWS) e garantir que ele esteja sempre online. Ele me permitiu aplicar conhecimentos em:</p>
+            <ul>
+                <li>**Infraestrutura em Nuvem (AWS):** Criando redes, máquinas virtuais e regras de segurança.</li>
+                <li>**Administração Linux:** Instalando e configurando serviços essenciais.</li>
+                <li>**Automação e Scripting:** Desenvolvendo scripts para monitorar a saúde do servidor.</li>
+                <li>**Monitoramento e Alertas:** Implementando notificações automáticas em caso de problemas.</li>
+            </ul>
+            <p>A ideia é simular um ambiente real onde a disponibilidade de um serviço é crítica, e a equipe precisa ser alertada rapidamente se algo der errado.</p>
+        </div>
+
+        <div class="section">
+            <h2>O Que Foi Feito?</h2>
+            <p>Em resumo, as principais etapas do projeto envolveram:</p>
+            <ul>
+                <li>Montar uma rede personalizada na AWS (VPC).</li>
+                <li>Lançar um servidor Ubuntu na nuvem.</li>
+                <li>Instalar e configurar o Nginx para servir esta página.</li>
+                <li>Criar um "vigia" (script) que checa o site a cada minuto e registra tudo.</li>
+                <li>Programar alertas automáticos para o Discord se o site cair.</li>
+            </ul>
+        </div>
+
+        <div class="call-to-action">
+            <p>Quer saber todos os detalhes técnicos, ver os comandos e os testes?</p>
+            <a href="[Link para a documentação do seu projeto no GitHub]" target="_blank">Acesse a Documentação Completa no GitHub</a>
+        </div>
+
+        <div class="footer">
+            <p>Desenvolvido para o Programa de Bolsas DevSecOps - Compass.uol - Turma ABR 2025</p>
+            <p>Acompanhamento: Thiago Geremias De Oliveira, Yurisay Josefina Escudero Guevara, Davi Santos Cardoso Da Silva, Patricia Maria Moura dos Santos</p>
+            <p>Data de Criação: <span id="creationDate"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Função para mostrar a data e hora atual no rodapé
+        document.getElementById('creationDate').innerHTML = new Date().toLocaleDateString('pt-BR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>
