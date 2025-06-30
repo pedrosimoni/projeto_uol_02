@@ -1,11 +1,8 @@
 #!/bin/bash
 
-SERVER_URL="localhost"
+SERVER_URL="<ec2_ip>/pb-jun-2025"
 
-LOG_FILE="/var/log/monitoramento.log"
-
-DISCORD_WEBHOOK="https://discord.com/api/webhooks/1388665431811686541/IG5_8zHjWTYSBZ0v0Z_ul0ZzZmiL6oliNH-4BQyDeWG1CelDZDa9s6K-FSPGRjHt2C5-"
-
+LOG_FILE="/var/log/stats-nginx.log"
 
 http_code=$(curl -s -w "%{http_code}" -o /dev/null "$SERVER_URL") # faz a requisição HTTP para o servidor e filtra apenas o http_code
 if [ $http_code = 200 ]; then # verifica se o http_code é 200: servidor respondeu normalmente
