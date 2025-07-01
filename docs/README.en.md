@@ -104,7 +104,7 @@ All will be created in the VPC we just created
 
 ### 1.5 Result
 
-![alt text](../aws_details.png)
+![alt text](../img/aws_details.png)
 
 ### 1.6 Accessing the Machine via SSH
 
