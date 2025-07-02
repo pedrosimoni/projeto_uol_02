@@ -72,9 +72,8 @@ All will be created in the VPC we just created
 
 1.  **Internet Gateway (IGW) Creation:**
     - `Name`: `igw-pb-jun-2025`
-    - **VPC:** `PB - JUN 2025`
     - `Apply Tags`
-    - `Attach IGW to our VPC`
+    - `Actions` > `Attach to VPC` > `Attach IGW to our VPC`
 
 2.  **Public Route Table Creation:**
     - `Name`: `rtb-pb-jun-2025-publica`
