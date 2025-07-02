@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER_URL="<ec2_ip>/pb-jun-2025"
+SERVER_URL="<EC2_IP>/pb-jun-2025"
 
 LOG_FILE="/var/log/stats-nginx.log"
 
