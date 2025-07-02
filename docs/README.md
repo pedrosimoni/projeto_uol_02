@@ -101,6 +101,7 @@ Todas vão ser criadas na VPC que acabamos de criar
         -   **Regras de Entrada (Inbound Rules):**
             -   **SSH (Porta 22):** Permitir tráfego do seu IP (por segurança). 
             -   **HTTP (Porta 80):** Permitir tráfego de `Anywhere` (`0.0.0.0/0`) para que o site seja acessível publicamente.
+- **Detalhes Avançados** > **User data** (desafio): se for preciso subir uma máquina já configurada com o servidor, a página HTML e o script de monitoramento basta usar *userData.bash*
 
 ### 1.5 Resultado
 

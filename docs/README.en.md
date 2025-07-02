@@ -43,14 +43,14 @@ This project aims to develop and test basic skills in Linux, Amazon Web Services
 All will be created in the VPC we just created
 
 **Public Subnet 1:**
-- `Name`: `subnet-pb-jun-2025-publica-1`
+- `Name`: `subnet-pb-jun-2025-public-1`
 - Availability Zone: `us-east-2a`
 - CIDR Block: `10.0.1.0/24`
 - `Apply Tags`
 - **Additional Configuration:** Enable "Auto-assign public IPv4 address" for EC2 instances to automatically receive public IPs.
 
 **Public Subnet 2:**
-- `Name`: `subnet-pb-jun-2025-publica-2`
+- `Name`: `subnet-pb-jun-2025-public-2`
 - Availability Zone: `us-east-2b` (Suggestion: use a different AZ than the first public for greater resilience)
 - CIDR Block: `10.0.2.0/24`
 - `Apply Tags`
@@ -82,7 +82,7 @@ All will be created in the VPC we just created
     - `Apply Tags`
 
     - **Routes:** Add a route with `Destination: 0.0.0.0/0` (all internet traffic) and `Target: igw-pb-jun-2025`.
-    - **Subnet Associations:** Associate this route table with the public subnets (`subnet-pb-jun-2025-publica-1` and `subnet-pb-jun-2025-publica-2`).
+    - **Subnet Associations:** Associate this route table with the public subnets (`subnet-pb-jun-2025-public-1` and `subnet-pb-jun-2025-public-2`).
 
 ### 1.4 EC2 Instance Configuration
 
@@ -93,7 +93,7 @@ All will be created in the VPC we just created
 -   **Key Pair:** Create a new key pair or select an existing one (`pb-jun-2025`).
 -   **Network Settings:**
     -   **VPC:** `PB - JUN 2025`.
-    -   **Subnet:** `subnet-pb-jun-2025-publica-1`.
+    -   **Subnet:** `subnet-pb-jun-2025-public-1`.
     -   **Auto-assign public IP:** `Enable`.
     -   **Security Group:** Create a new Security Group.
         -   **Name:** `pb-jun-2025-web`
