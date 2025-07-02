@@ -72,9 +72,8 @@ Todas vão ser criadas na VPC que acabamos de criar
 
 1.  **Criação do Internet Gateway (IGW):**
     - `Name`: `igw-pb-jun-2025`
-    - **VPC:** `PB - JUN 2025`
     - `Aplicar Tags`
-    - `Anexar IGW na nossa VPC`
+    - `Ações` > `Anexar à uma VPC` > `Anexar IGW na nossa VPC`
 
 2.  **Criação da Tabela de Roteamento Pública:**
     - `Name`: `rtb-pb-jun-2025-publica`
