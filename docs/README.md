@@ -72,9 +72,8 @@ Todas vão ser criadas na VPC que acabamos de criar
 
 1.  **Criação do Internet Gateway (IGW):**
     - `Name`: `igw-pb-jun-2025`
-    - **VPC:** `PB - JUN 2025`
     - `Aplicar Tags`
-    - `Anexar IGW na nossa VPC`
+    - `Ações` > `Anexar à uma VPC` > `Anexar IGW na nossa VPC`
 
 2.  **Criação da Tabela de Roteamento Pública:**
     - `Name`: `rtb-pb-jun-2025-publica`
@@ -105,7 +104,7 @@ Todas vão ser criadas na VPC que acabamos de criar
 
 ### 1.5 Resultado
 
-![alt text](img/aws_details.png)
+![alt text](../img/aws_details.png)
 
 ### 1.6 Acessar a Máquina via SSH
 
@@ -114,7 +113,7 @@ chmod 400 pb-jun-2025.pem
 ssh -i pb-jun-2025.pem ubuntu@<IP da máquina>
 ```
 
-![alt text](img/connected_to_ec2.png)
+![alt text](../img/connected_to_ec2.png)
 
 ## 2 Configuração do Servidor Web
 
@@ -130,7 +129,7 @@ sudo systemctl enable nginx # Garante que o Nginx inicie automaticamente com o s
 sudo systemctl status nginx # A saída esperada é 'enabled' e 'active (running)'.
 ```
 
-![alt text](img/nginx_page.png)
+![alt text](../img/nginx_page.png)
 
 ### 2.2 Criação da Página HTML customizada
 
@@ -186,7 +185,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-![alt text](img/nginx_ready.png)
+![alt text](../img/nginx_ready.png)
 
 ## 3 Monitoramento e Notificações
 
@@ -237,7 +236,7 @@ Nenhuma mensagem deve aparecer. Mas você pode ver o output com:
 sudo cat /var/log/stats-nginx.log
 ```
 
-![alt text](img/log-nginx.png)
+![alt text](../img/log-nginx.png)
 
 ### 3.2 Configurar o Script para Rodar Automaticamente (Cron)
 
@@ -261,7 +260,7 @@ Para verificar as crontabs existentes:
 sudo crontab -l
 ```
 
-![alt text](img/crontab.png)
+![alt text](../img/crontab.png)
 
 ## 4 Teste e automação
 
@@ -273,15 +272,14 @@ sudo systemctl stop nginx
 
 Podemos aproveitar essa chance para testar nossa notificação quando o servidor estiver caído
 
-![alt text](img/ds-error.png)
+![alt text](../img/ds-error.png)
 
 Podemos ver que depois de rodar o comando o programa começou a mandar notificações, podemos confirmar isso também pelo arquivo de log:
 
-![alt text](img/error-log.png)
+![alt text](../img/error-log.png)
 
 ## 5. Referências
 
 - [Amazon Virtual Private Cloud (VPC) Documentation](https://docs.aws.amazon.com/vpc/?icmpid=docs_homepage_featuredsvcs)
 - [Amazon Elastic Compute Cloud (Amazon EC2) Documentation](https://docs.aws.amazon.com/ec2/?icmpid=docs_homepage_featuredsvcs)
-- [nginx Documentation](https://nginx.org/en/docs/)
 - [Cron Jobs Configuration and Usage Guide](https://www.pantz.org/software/cron/croninfo)

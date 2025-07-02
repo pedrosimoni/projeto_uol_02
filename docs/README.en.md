@@ -72,9 +72,8 @@ All will be created in the VPC we just created
 
 1.  **Internet Gateway (IGW) Creation:**
     - `Name`: `igw-pb-jun-2025`
-    - **VPC:** `PB - JUN 2025`
     - `Apply Tags`
-    - `Attach IGW to our VPC`
+    - `Actions` > `Attach to VPC` > `Attach IGW to our VPC`
 
 2.  **Public Route Table Creation:**
     - `Name`: `rtb-pb-jun-2025-publica`
@@ -105,7 +104,7 @@ All will be created in the VPC we just created
 
 ### 1.5 Result
 
-![alt text](aws_details.png)
+![alt text](../img/aws_details.png)
 
 ### 1.6 Accessing the Machine via SSH
 
@@ -114,7 +113,7 @@ chmod 400 pb-jun-2025.pem
 ssh -i pb-jun-2025.pem ubuntu@<machine_IP>
 ```
 
-![alt text](img/connected_to_ec2.png)
+![alt text](../img/connected_to_ec2.png)
 
 ## 2 Web Server Configuration
 
@@ -130,7 +129,7 @@ sudo systemctl enable nginx # Ensures Nginx starts automatically with the system
 sudo systemctl status nginx # Expected output is 'enabled' and 'active (running)'.
 ```
 
-![alt text](img/nginx_page.png)
+![alt text](../img/nginx_page.png)
 
 ### 2.2 Custom HTML Page Creation
 
@@ -186,7 +185,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-![alt text](img/nginx_ready.png)
+![alt text](../img/nginx_ready.png)
 
 
 ## 3 Monitoring and Notifications
@@ -238,7 +237,7 @@ No message should appear. But you can see the output with:
 sudo cat /var/log/stats-nginx.log
 ```
 
-![alt text](img/log-nginx.png)
+![alt text](../img/log-nginx.png)
 
 ### 3.2 Configure the Script to Run Automatically (Cron)
 
@@ -262,7 +261,7 @@ To view existing crontabs:
 sudo crontab -l
 ```
 
-![alt text](img/crontab.png)
+![alt text](../img/crontab.png)
 
 ## 4 Test and Automation
 
@@ -274,15 +273,14 @@ sudo systemctl stop nginx
 
 We can use this opportunity to test our notification when the server is down.
 
-![alt text](img/ds-error.png)
+![alt text](../img/ds-error.png)
 
 We can see that after running the command, the program started sending notifications. We can also confirm this from the log file:
 
-![alt text](img/error-log.png)
+![alt text](../img/error-log.png)
 
 ## 5. References
 
 - [Amazon Virtual Private Cloud (VPC) Documentation](https://docs.aws.amazon.com/vpc/?icmpid=docs_homepage_featuredsvcs)
 - [Amazon Elastic Compute Cloud (Amazon EC2) Documentation](https://docs.aws.amazon.com/ec2/?icmpid=docs_homepage_featuredsvcs)
-- [nginx Documentation](https://nginx.org/en/docs/)
 - [Cron Jobs Configuration and Usage Guide](https://www.pantz.org/software/cron/croninfo)
