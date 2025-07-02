@@ -101,6 +101,7 @@ All will be created in the VPC we just created
         -   **Inbound Rules:**
             -   **SSH (Port 22):** Allow traffic from your IP (for security).
             -   **HTTP (Port 80):** Allow traffic from `Anywhere` (`0.0.0.0/0`) for the website to be publicly accessible.
+- **Advance details** > **User data** (challenge): if you need to launch the instance already configured with the server, the HTML page and the monitoring script just use *userData.bash*
 
 ### 1.5 Result
 
