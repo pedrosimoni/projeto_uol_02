@@ -3,8 +3,7 @@
 yes | sudo apt-get install nginx curl
 sudo systemctl enable nginx 
 
-echo '<!DOCTYPE html>
-<html lang="pt-BR">
+echo '<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -134,11 +133,8 @@ echo '<!DOCTYPE html>
         <div class="section">
             <h2>Quem Sou Eu?</h2>
             <div class="info-box">
-                <p><strong>Nome:</strong> [Seu Nome Completo]</p>
-                <p><strong>Minha Missão:</strong> Bolsista DevSecOps - Compass.uol</p>
-                <p><strong>Email:</strong> <a href="mailto:[Seu Email]">[Seu Email]</a></p>
-                <p><strong>LinkedIn:</strong> <a href="[Link para seu LinkedIn]" target="_blank">Meu Perfil no LinkedIn</a></p>
-                <p><strong>GitHub:</strong> <a href="[Link para seu GitHub]" target="_blank">Meu GitHub</a></p>
+                <p><strong>Nome:</strong> Pedro Luiz Martins Simoni</p>
+                <p><strong>LinkedIn: </strong> <a href="[https://www.linkedin.com/in/pedro-simoni-6ba491115/]" target="_blank">Meu Perfil no LinkedIn</a></p>
             </div>
             <p>Seja bem-vindo(a) à página do meu projeto! Aqui, você poderá conhecer um pouco sobre o trabalho que desenvolvi no Programa de Bolsas DevSecOps da Compass.uol, focado em construir e monitorar um servidor web na nuvem.</p>
         </div>
@@ -169,7 +165,7 @@ echo '<!DOCTYPE html>
 
         <div class="call-to-action">
             <p>Quer saber todos os detalhes técnicos, ver os comandos e os testes?</p>
-            <a href="[Link para a documentação do seu projeto no GitHub]" target="_blank">Acesse a Documentação Completa no GitHub</a>
+            <a href="[https://github.com/pedrosimoni/projeto_uol_01/tree/main]" target="_blank">Acesse a Documentação Completa no GitHub</a>
         </div>
 
         <div class="footer">
