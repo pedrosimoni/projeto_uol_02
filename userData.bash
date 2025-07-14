@@ -1,7 +1,7 @@
 #!/bin/bash
 
-yes | sudo apt-get install nginx curl
-sudo systemctl enable nginx 
+yes | apt-get install nginx curl
+systemctl enable nginx 
 
 echo '<html lang="pt-BR">
 <head>
@@ -184,9 +184,9 @@ echo '<html lang="pt-BR">
         });
     </script>
 </body>
-</html>' | sudo tee /var/www/html/index.nginx-debian.html > /dev/null # substituímos > por tee e desconsideramos a saída com > /dev/null
+</html>' > tee /var/www/html/index.nginx-debian.html > /dev/null # desconsideramos a saída com > /dev/null
 
-sudo systemctl reload nginx
+systemctl reload nginx
 
 echo '#!/bin/bash
 
@@ -202,10 +202,10 @@ else
         curl -X POST -H "Content-Type: application/json" -d "{\"content\": \"$message\"}" "$DISCORD_WEBHOOK" # faz o POST HTTP para o webhook do discord
 fi
 
-echo "$message" >> "$LOG_FILE" # faz o log da mensagem de log' | sudo tee /usr/local/bin/monitor-nginx.sh > /dev/null
+echo "$message" >> "$LOG_FILE" # faz o log da mensagem de log' > /usr/local/bin/monitor-nginx.sh > /dev/null
 
 export DISCORD_WEBHOOK="<webhook>"
 
-echo 'DISCORD_WEBHOOK="<webhook>"' | sudo tee -a /etc/environment > /dev/null # substituímos >> por tee -a e desconsideramos a saída com > /dev/null
+echo 'DISCORD_WEBHOOK="<webhook>"' >> /etc/environment > /dev/null
 
-(crontab -l 2>/dev/null || echo ""; echo "*/1 * * * * /bin/bash /usr/local/bin/monitor-nginx.sh") | sudo crontab -
+(crontab -l 2>/dev/null || echo ""; echo "*/1 * * * * /bin/bash /usr/local/bin/monitor-nginx.sh") > crontab -
