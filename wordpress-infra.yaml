@@ -1,0 +1,384 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Template para criar a infraestrutura de rede, Banco de Dados (RDS) e EFS
+  necessaria para rodar uma aplicacao Wordpress na AWS.
+
+Parameters:
+  DBMasterUsername:
+    Type: String
+    Description: O nome de usuario para o banco de dados RDS.
+    Default: 'admin'
+  
+  DBMasterUserPassword:
+    Type: String
+    Description: A senha do banco de dados RDS.
+    NoEcho: true
+    MinLength: 8
+    MaxLength: 41
+  
+  MyIP:
+    Type: String
+    Description: Seu endereco IP para acesso SSH ao Bastion Host.
+    Default: '0.0.0.0/0'
+
+Metadata:
+  AWS::CloudFormation::Interface: #TODO
+    ParameterGroups:
+      - Label:
+          default: 'Tags e Seguranca'
+        Parameters:
+          - MyIP
+      - Label:
+          default: 'Configuracao do Banco de Dados'
+        Parameters:
+          - DBMasterUsername
+          - DBMasterUserPassword
+
+Resources:
+  # ----------------------------------------------------------------------
+  # Secao 1: Criacao da Rede (VPC, Subnets, Gateways e Tabelas de Roteamento)
+  # ----------------------------------------------------------------------
+  DesafioWordpressVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: desafio-wordpress-vpc
+
+  DesafioWordpressPublicaSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      AvailabilityZone: !Sub "${AWS::Region}a"
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: true #TODO 
+      Tags:
+        - Key: Name
+          Value: subnet-wordpress-publica-1
+
+  DesafioWordpressPublicaSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      AvailabilityZone: !Sub "${AWS::Region}b"
+      CidrBlock: 10.0.2.0/24
+      MapPublicIpOnLaunch: true #TODO
+      Tags:
+        - Key: Name
+          Value: subnet-wordpress-publica-2
+
+  DesafioWordpressPrivadaSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      AvailabilityZone: !Sub "${AWS::Region}a"
+      CidrBlock: 10.0.3.0/24
+      Tags:
+        - Key: Name
+          Value: subnet-wordpress-privada-1
+
+  DesafioWordpressPrivadaSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      AvailabilityZone: !Sub "${AWS::Region}b"
+      CidrBlock: 10.0.4.0/24
+      Tags:
+        - Key: Name
+          Value: subnet-wordpress-privada-2
+
+  DesafioWordpressALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      GroupName: DesafioWordpressALBSecurityGroup
+      GroupDescription: Allow HTTP/HTTPS from anywhere
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: DesafioWordpressALBSecurityGroup
+
+  DesafioWordpressEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      GroupName: DesafioWordpressEC2SecurityGroup
+      GroupDescription: Allow HTTP from ALB and NFS from EFS
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref DesafioWordpressALBSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref DesafioWordpressALBSecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: DesafioWordpressEC2SecurityGroup
+
+  DesafioWordpressRDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      GroupName: DesafioWordpressRDSSecurityGroup
+      GroupDescription: Allow MySQL from EC2
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref DesafioWordpressEC2SecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: DesafioWordpressRDSSecurityGroup
+
+  DesafioWordpressEFSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      GroupName: DesafioWordpressEFSSecurityGroup
+      GroupDescription: Allow NFS from EC2
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2049
+          ToPort: 2049
+          SourceSecurityGroupId: !Ref DesafioWordpressEC2SecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: DesafioWordpressEFSSecurityGroup
+
+  DesafioWordpressBastionHostSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      GroupName: DesafioWordpressBastionHostSecurityGroup
+      GroupDescription: Allow SSH from My IP
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref MyIP
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: DesafioWordpressBastionHostSecurityGroup
+
+  # Adiciona a regra de NFS no Security Group do EC2
+  EC2NFSInboundRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref DesafioWordpressEC2SecurityGroup
+      IpProtocol: tcp
+      FromPort: 2049
+      ToPort: 2049
+      SourceSecurityGroupId: !Ref DesafioWordpressEFSSecurityGroup
+
+  DesafioWordpressInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: igw-desafio-wordpress
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      InternetGatewayId: !Ref DesafioWordpressInternetGateway
+
+  DesafioWordpressNATGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt DesafioWordpressEIP1.AllocationId
+      SubnetId: !Ref DesafioWordpressPublicaSubnet1
+      Tags:
+        - Key: Name
+          Value: nat-gateway-desafio-wordpress-1
+
+  DesafioWordpressEIP1:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  DesafioWordpressNATGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt DesafioWordpressEIP2.AllocationId
+      SubnetId: !Ref DesafioWordpressPublicaSubnet2
+      Tags:
+        - Key: Name
+          Value: nat-gateway-desafio-wordpress-2
+
+  DesafioWordpressEIP2:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  DesafioWordpressPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      Tags:
+        - Key: Name
+          Value: rtb-desafio-wordpress-publica
+
+  DesafioWordpressPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref DesafioWordpressPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref DesafioWordpressInternetGateway
+
+  DesafioWordpressPublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref DesafioWordpressPublicaSubnet1
+      RouteTableId: !Ref DesafioWordpressPublicRouteTable
+
+  DesafioWordpressPublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref DesafioWordpressPublicaSubnet2
+      RouteTableId: !Ref DesafioWordpressPublicRouteTable
+
+  DesafioWordpressPrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      Tags:
+        - Key: Name
+          Value: rtb-desafio-wordpress-privada-1
+
+  DesafioWordpressPrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref DesafioWordpressPrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref DesafioWordpressNATGateway1
+
+  DesafioWordpressPrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref DesafioWordpressPrivadaSubnet1
+      RouteTableId: !Ref DesafioWordpressPrivateRouteTable1
+
+  DesafioWordpressPrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref DesafioWordpressVPC
+      Tags:
+        - Key: Name
+          Value: rtb-desafio-wordpress-privada-2
+
+  DesafioWordpressPrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref DesafioWordpressPrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref DesafioWordpressNATGateway2
+
+  DesafioWordpressPrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref DesafioWordpressPrivadaSubnet2
+      RouteTableId: !Ref DesafioWordpressPrivateRouteTable2
+
+  WordpressDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for Wordpress RDS DB
+      SubnetIds:
+        - !Ref DesafioWordpressPrivadaSubnet1
+        - !Ref DesafioWordpressPrivadaSubnet2
+      Tags:
+        - Key: Name
+          Value: wordpress-db-subnet-group
+
+  WordpressRDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: database-desafio-wordpress
+      Engine: mysql
+      EngineVersion: '8.0.42'
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: '20'
+      MasterUsername: !Ref DBMasterUsername
+      MasterUserPassword: !Ref DBMasterUserPassword
+      VPCSecurityGroups:
+        - !Ref DesafioWordpressRDSSecurityGroup
+      DBSubnetGroupName: !Ref WordpressDBSubnetGroup
+      PubliclyAccessible: false
+      MultiAZ: false
+      Tags:
+        - Key: Name
+          Value: database-desafio-wordpress
+      DeletionProtection: false
+
+  WordPressFileSystem:
+    Type: AWS::EFS::FileSystem
+    Properties:
+      Encrypted: true
+      FileSystemTags:
+        - Key: Name
+          Value: WordPress File System
+
+  EFSMountTarget1:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref WordPressFileSystem
+      SubnetId: !Ref DesafioWordpressPrivadaSubnet1
+      SecurityGroups:
+        - !Ref DesafioWordpressEFSSecurityGroup
+        
+  EFSMountTarget2:
+    Type: AWS::EFS::MountTarget
+    Properties:
+      FileSystemId: !Ref WordPressFileSystem
+      SubnetId: !Ref DesafioWordpressPrivadaSubnet2
+      SecurityGroups:
+        - !Ref DesafioWordpressEFSSecurityGroup
+
+Outputs:
+  VPCId:
+    Description: ID da VPC criada.
+    Value: !Ref DesafioWordpressVPC
+  
+  PublicSubnet1Id:
+    Description: ID da Subnet Publica 1.
+    Value: !Ref DesafioWordpressPublicaSubnet1
+    
+  PrivateSubnet1Id:
+    Description: ID da Subnet Privada 1.
+    Value: !Ref DesafioWordpressPrivadaSubnet1
+
+  RDSInstanceEndpoint:
+    Description: Endereço de acesso ao Banco de Dados RDS.
+    Value: !GetAtt WordpressRDS.Endpoint.Address
+  
+  EFSFileSystemId:
+    Description: ID do Sistema de Arquivos EFS.
+    Value: !Ref WordPressFileSystem
