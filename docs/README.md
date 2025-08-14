@@ -22,19 +22,19 @@ O objetivo deste projeto é configurar uma infraestrutura robusta e escalável n
 
 ## Sumário
 
-1.  [Configuração da Rede](#1-configuração-da-rede)
-    1.1. [Criação da VPC](#11-criação-da-vpc)
-    1.2. [Criação das Sub-redes](#12-criação-das-sub-redes)
-    1.3. [Criação dos Security Groups (SG)](#13-criação-dos-security-groups-sg)
-    1.4. [Criação e Configuração do Internet Gateway (IGW), NAT Gateways e Tabelas de Roteamento](#14-criação-e-configuração-do-internet-gateway-igw-nat-gateways-e-tabelas-de-roteamento)
-2.  [Criação do Banco de Dados (RDS)](#2-criação-do-banco-de-dados-rds)
-3.  [Criação do Elastic File System (EFS)](#3-criação-do-elastic-file-system-efs)
-4.  [Criação do App Load Balancer (ALB), Auto Scaling Group (ASG) e Launch Template](#4-criação-do-app-load-balancer-alb-auto-scaling-group-asg-e-launch-template)
-    4.1. [IAM Role e Launch Template](#41-iam-role-e-launch-template)
-    4.2. [App Load Balancer (ALB)](#42-app-load-balancer-alb)
-    4.3. [Auto Scaling Group (ASG)](#43-auto-scaling-group-asg)
-5.  [Bastion Host](#5-bastion-host)
-6.  [Configurações Finais](#6-configurações-finais)
+- 1.  [Configuração da Rede](#1-configuração-da-rede)
+    - 1.1. [Criação da VPC](#11-criação-da-vpc)
+    - 1.2. [Criação das Sub-redes](#12-criação-das-sub-redes)
+    - 1.3. [Criação dos Security Groups (SG)](#13-criação-dos-security-groups-sg)
+    - 1.4. [Criação e Configuração do Internet Gateway (IGW), NAT Gateways e Tabelas de Roteamento](#14-criação-e-configuração-do-internet-gateway-igw-nat-gateways-e-tabelas-de-roteamento)
+- 2.  [Criação do Banco de Dados (RDS)](#2-criação-do-banco-de-dados-rds)
+- 3.  [Criação do Elastic File System (EFS)](#3-criação-do-elastic-file-system-efs)
+- 4.  [Criação do App Load Balancer (ALB), Auto Scaling Group (ASG) e Launch Template](#4-criação-do-app-load-balancer-alb-auto-scaling-group-asg-e-launch-template)
+    - 4.1. [IAM Role e Launch Template](#41-iam-role-e-launch-template)
+    - 4.2. [App Load Balancer (ALB)](#42-app-load-balancer-alb)
+    - 4.3. [Auto Scaling Group (ASG)](#43-auto-scaling-group-asg)
+- 5.  [Bastion Host](#5-bastion-host)
+- 6.  [Configurações Finais](#6-configurações-finais)
 
 ---
 
