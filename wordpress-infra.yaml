@@ -185,7 +185,7 @@ Resources:
           Value: DesafioWordpressBastionHostSecurityGroup
 
   # Adiciona as regras de NFS e SSH no Security Group do EC2
-  EC2NFSInboundRule:
+  EC2NFSInboundRule1:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref DesafioWordpressEC2SecurityGroup
@@ -194,11 +194,11 @@ Resources:
       ToPort: 2049
       SourceSecurityGroupId: !Ref DesafioWordpressEFSSecurityGroup
 
-  EC2NFSInboundRule:
+  EC2NFSInboundRule2:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref DesafioWordpressEC2SecurityGroup
-      IpProtocol: ssh 
+      IpProtocol: tcp
       FromPort: 22
       ToPort: 22 
       SourceSecurityGroupId: !Ref DesafioWordpressBastionHostSecurityGroup
@@ -335,6 +335,7 @@ Resources:
       AllocatedStorage: '20'
       MasterUsername: !Ref DBMasterUsername
       MasterUserPassword: !Ref DBMasterUserPassword
+      DBName: wordpress
       VPCSecurityGroups:
         - !Ref DesafioWordpressRDSSecurityGroup
       DBSubnetGroupName: !Ref WordpressDBSubnetGroup

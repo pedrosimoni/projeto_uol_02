@@ -1,25 +1,37 @@
 #!/bin/bash
 
-EFS_ID="fs-0b09ab72cfeb183b1"
-DB_HOST="database-desafio-wordpress.c7cyq8wsifmj.us-east-2.rds.amazonaws.com"
-DB_USER="admin"
-DB_PASSWORD="password"
+SECRET_NAME="DBSecret"
+AWS_REGION="us-east-2"
 DB_NAME="wordpress"
 
-# Instala pacotes necessários
+# Instala pacotes necessários (awscli para buscar o segredo e os endpoints)
 yum update -y
-yum install  -y docker amazon-efs-utils python3-botocore
+yum install -y docker amazon-efs-utils python3-botocore nc jq
+
+# Instala docker-compose 
 curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
+
+# Instala AWS CLI v2
+sudo dnf install awscli
+
+# Busca o ID do EFS e o Endereço do RDS usando o AWS CLI
+EFS_ID=$(aws efs describe-file-systems --query "FileSystems[?Tags[?Key=='Name' && Value=='WordPress File System']].FileSystemId" --output text --region ${AWS_REGION})
+DB_HOST=$(aws rds describe-db-instances --db-instance-identifier database-desafio-wordpress --query "DBInstances[0].Endpoint.Address" --output text --region ${AWS_REGION})
+
+# Busca o segredo do Secrets Manager
+SECRET=$(aws secretsmanager get-secret-value --secret-id ${SECRET_NAME} --region ${AWS_REGION} --query SecretString --output text)
+DB_USER=$(echo $SECRET | jq -r .username)
+DB_PASSWORD=$(echo $SECRET | jq -r .password)
 
 # Roda o Docker
 service docker start
 
 # Cria ponto de montagem para o EFS e o monta
-mkdir /mnt/efs/wordpress -p
+mkdir -p /mnt/efs/wordpress
 mount -t efs -o tls ${EFS_ID}:/ /mnt/efs/wordpress
 
-# Cria o arquivo docker-compose.yaml e rodar docker-compose
+# Cria o arquivo docker-compose.yaml e roda o docker-compose
 cat <<EOF > /home/ec2-user/docker-compose.yaml
 services:
   wordpress:
@@ -35,5 +47,10 @@ services:
     volumes:
       - /mnt/efs/wordpress:/var/www/html
 EOF
+
+# Implementação da função de espera usando Netcat (nc)
+until nc -vz $DB_HOST 3306; do
+  sleep 5
+done
 
 docker-compose -f /home/ec2-user/docker-compose.yaml up -d
