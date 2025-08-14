@@ -22,7 +22,7 @@ Parameters:
     Default: '0.0.0.0/0'
 
 Metadata:
-  AWS::CloudFormation::Interface: #TODO
+  AWS::CloudFormation::Interface: #TODO adicionar tags
     ParameterGroups:
       - Label:
           default: 'Tags e Seguranca'
@@ -52,7 +52,6 @@ Resources:
       VpcId: !Ref DesafioWordpressVPC
       AvailabilityZone: !Sub "${AWS::Region}a"
       CidrBlock: 10.0.1.0/24
-      MapPublicIpOnLaunch: true #TODO 
       Tags:
         - Key: Name
           Value: subnet-wordpress-publica-1
@@ -63,7 +62,6 @@ Resources:
       VpcId: !Ref DesafioWordpressVPC
       AvailabilityZone: !Sub "${AWS::Region}b"
       CidrBlock: 10.0.2.0/24
-      MapPublicIpOnLaunch: true #TODO
       Tags:
         - Key: Name
           Value: subnet-wordpress-publica-2
@@ -186,7 +184,7 @@ Resources:
         - Key: Name
           Value: DesafioWordpressBastionHostSecurityGroup
 
-  # Adiciona a regra de NFS no Security Group do EC2
+  # Adiciona as regras de NFS e SSH no Security Group do EC2
   EC2NFSInboundRule:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -195,6 +193,15 @@ Resources:
       FromPort: 2049
       ToPort: 2049
       SourceSecurityGroupId: !Ref DesafioWordpressEFSSecurityGroup
+
+  EC2NFSInboundRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref DesafioWordpressEC2SecurityGroup
+      IpProtocol: ssh 
+      FromPort: 22
+      ToPort: 22 
+      SourceSecurityGroupId: !Ref DesafioWordpressBastionHostSecurityGroup
 
   DesafioWordpressInternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -366,11 +373,11 @@ Outputs:
   VPCId:
     Description: ID da VPC criada.
     Value: !Ref DesafioWordpressVPC
-  
+
   PublicSubnet1Id:
     Description: ID da Subnet Publica 1.
     Value: !Ref DesafioWordpressPublicaSubnet1
-    
+
   PrivateSubnet1Id:
     Description: ID da Subnet Privada 1.
     Value: !Ref DesafioWordpressPrivadaSubnet1
@@ -378,7 +385,3 @@ Outputs:
   RDSInstanceEndpoint:
     Description: Endereço de acesso ao Banco de Dados RDS.
     Value: !GetAtt WordpressRDS.Endpoint.Address
-  
-  EFSFileSystemId:
-    Description: ID do Sistema de Arquivos EFS.
-    Value: !Ref WordPressFileSystem
