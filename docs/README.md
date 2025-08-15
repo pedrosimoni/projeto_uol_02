@@ -340,23 +340,18 @@ Para finalizar a configuração, é essencial validar a comunicação entre todo
 ## 7. Funcionamento e Considerações Finais
 
 Stack referente à criação das seções [1](#1-configuração-da-rede), [2](#2-criação-do-banco-de-dados-rds) e [3](#3-criação-do-elastic-file-system-efs):
-
 ![Stack de metade do projeto](../img/stack.png)
 
 Target group verificando os status das máquinas e do nosso site Wordpress rodando dentro dos container:
-
 ![Target Group](../img/target-group.png)
 
 Instâncias rodando:
-
 ![Instâncias](../img/instancias.png)
 
 Conectando na Bastion Host e no Wordpress Server e verificando o container rodando:
-
 ![Bastion Host Teste](../img/bastion-host.png)
 
 Testando derrubar o container:
-
 ![Derrubando](../img/derrubando.png)
 ![Instância Unhealthy](../img/unhealthy.png)
 
@@ -364,11 +359,9 @@ Substituida:
 ![Instância substituida](../img/substituicao.png)
 
 Login ainda funcionando, já que o nosso file system e banco são compartilhados:
-
 ![Login](../img/login.png)
 
 Depois de rodar o script para testar o stress da CPU:
-
 ![Stress CPU](../img/cpu.png)
 ![Stress Top](../img/top.png)
 ![ASG Working](../img/replaced.png)

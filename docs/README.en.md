@@ -340,23 +340,18 @@ To finalize the configuration, it is essential to validate the communication bet
 ## 7. Final Considerations and Operation
 
 Stack related to the creation of sections [1](#1-network-configuration), [2](#2-database-rds-creation), and [3](#3-elastic-file-system-efs-creation):
-
 ![Stack from half of the project](../img/stack.png)
 
 Target group checking the status of the machines and our WordPress site running inside the containers:
-
 ![Target Group](../img/target-group.png)
 
 Running instances:
-
 ![Instâncias](../img/instancias.png)
 
 Connecting to the Bastion Host and the WordPress Server and checking the running container:
-
 ![Bastion Host Test](../img/bastion-host.png)
 
 Testing to bring down the container:
-
 ![Bringing Down](../img/derrubando.png)
 ![Unhealthy Instance](../img/unhealthy.png)
 
@@ -364,11 +359,17 @@ Replaced:
 ![Instance replaced](../img/substituicao.png)
 
 Login still working, since our file system and database are shared:
-
 ![Login](../img/login.png)
+
+After running the script to test CPU stress:
+![CPU Stress](../img/cpu.png)
+![Top Stress](../img/top.png)
+![ASG Working](../img/replaced.png)
 
 ### 7.1 Final Considerations:
 
 This project allows for practical experience with robust solutions using AWS services, building a secure, resilient, and self-healing structure, enabling high accessibility and availability. Furthermore, it provides a good foundation for problem-solving and Linux systems.
+
+Furthermore, it is important to note that while this project is excellent for testing/development purposes, for production environments, it would be beneficial to keep more machines active at the same time (given the delay in AWS's response during our tests), and to keep the App Load Balancer closer to our clients and not in a random region.
 
 ***Important reminder***: To avoid costs, do not forget to delete all the resources created for this project after use. Check costs daily in the Cost Explorer to prevent unwanted charges.
