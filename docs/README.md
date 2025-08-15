@@ -61,97 +61,97 @@ O primeiro passo é criar nossa **VPC (Virtual Private Cloud)**, que servirá co
 Em seguida, vamos segmentar nossa VPC em sub-redes para organizar e isolar os recursos. As sub-redes públicas hospedarão componentes de acesso externo, enquanto as privadas abrigarão os recursos internos, como as instâncias EC2 e o banco de dados.
 
 * **Sub-rede Pública 1:**
-    * `Name`: `subnet-wordpress-publica-1`
-    * `Zona de Disponibilidade`: `us-east-1a`
-    * `Bloco CIDR`: `10.0.1.0/24`
-    * **Configuração Adicional:** Habilitar "Auto-assign public IPv4 address" para que as instâncias EC2 recebam IPs públicos automaticamente.
+    * `Name`: `subnet-wordpress-publica-1`
+    * `Zona de Disponibilidade`: `us-east-1a`
+    * `Bloco CIDR`: `10.0.1.0/24`
+    * **Configuração Adicional:** Habilitar "Auto-assign public IPv4 address" para que as instâncias EC2 recebam IPs públicos automaticamente.
 * **Sub-rede Pública 2:**
-    * `Name`: `subnet-wordpress-publica-2`
-    * `Zona de Disponibilidade`: `us-east-1b`
-    * `Bloco CIDR`: `10.0.2.0/24`
-    * **Configuração Adicional:** Habilitar "Auto-assign public IPv4 address" para que as instâncias EC2 recebam IPs públicos automaticamente.
+    * `Name`: `subnet-wordpress-publica-2`
+    * `Zona de Disponibilidade`: `us-east-1b`
+    * `Bloco CIDR`: `10.0.2.0/24`
+    * **Configuração Adicional:** Habilitar "Auto-assign public IPv4 address" para que as instâncias EC2 recebam IPs públicos automaticamente.
 * **Sub-rede Privada 1:**
-    * `Name`: `subnet-wordpress-privada-1`
-    * `Zona de Disponibilidade`: `us-east-1a`
-    * `Bloco CIDR`: `10.0.3.0/24`
+    * `Name`: `subnet-wordpress-privada-1`
+    * `Zona de Disponibilidade`: `us-east-1a`
+    * `Bloco CIDR`: `10.0.3.0/24`
 * **Sub-rede Privada 2:**
-    * `Name`: `subnet-wordpress-privada-2`
-    * `Zona de Disponibilidade`: `us-east-1b`
-    * `Bloco CIDR`: `10.0.4.0/24`
+    * `Name`: `subnet-wordpress-privada-2`
+    * `Zona de Disponibilidade`: `us-east-1b`
+    * `Bloco CIDR`: `10.0.4.0/24`
 
 ### 1.3. Criação dos Security Groups (SG)
 
 Agora, vamos definir as regras de tráfego de rede para nossos componentes. Os **Security Groups** funcionarão como firewalls virtuais, controlando o acesso de entrada e saída para cada serviço.
 
 * `Name`: `DesafioWordpressALBSecurityGroup`
-    * `Description`: Permitir tráfego HTTP/HTTPS de qualquer lugar, direcionado ao nosso Application Load Balancer.
-    * `VPC`: `desafio-wordpress-vpc`
-    * **Regras de Entrada (Inbound Rules):**
-        * **HTTP:** Permitir tráfego de `Anywhere` (`0.0.0.0/0`).
-        * **HTTPS:** Permitir tráfego de `Anywhere` (`0.0.0.0/0`).
-    * **Regras de Saída (Outbound Rules):**
-        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
+    * `Description`: Permitir tráfego HTTP/HTTPS de qualquer lugar, direcionado ao nosso Application Load Balancer.
+    * `VPC`: `desafio-wordpress-vpc`
+    * **Regras de Entrada (Inbound Rules):**
+        * **HTTP:** Permitir tráfego de `Anywhere` (`0.0.0.0/0`).
+        * **HTTPS:** Permitir tráfego de `Anywhere` (`0.0.0.0/0`).
+    * **Regras de Saída (Outbound Rules):**
+        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
 * `Name`: `DesafioWordpressEC2SecurityGroup`
-    * `Description`: Controlar o tráfego de entrada para as instâncias EC2, permitindo apenas a comunicação do ALB e a conexão segura via SSH.
-    * `VPC`: `desafio-wordpress-vpc`
-    * **Regras de Entrada (Inbound Rules):**
-        * **HTTP:** Permitir tráfego do `DesafioWordpressALBSecurityGroup`.
-        * **NFS (2049):** Permitir tráfego do `DesafioWordpressEFSSecurityGroup`.
-        * **SSH (22):** Permitir tráfego do `DesafioWordpressBastionHostSecurityGroup`.
-    * **Regras de Saída (Outbound Rules):**
-        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
+    * `Description`: Controlar o tráfego de entrada para as instâncias EC2, permitindo apenas a comunicação do ALB e a conexão segura via SSH.
+    * `VPC`: `desafio-wordpress-vpc`
+    * **Regras de Entrada (Inbound Rules):**
+        * **HTTP:** Permitir tráfego do `DesafioWordpressALBSecurityGroup`.
+        * **NFS (2049):** Permitir tráfego do `DesafioWordpressEFSSecurityGroup`.
+        * **SSH (22):** Permitir tráfego do `DesafioWordpressBastionHostSecurityGroup`.
+    * **Regras de Saída (Outbound Rules):**
+        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
 * `Name`: `DesafioWordpressRDSSecurityGroup`
-    * `Description`: Garantir que apenas as instâncias EC2 possam se comunicar com o banco de dados MySQL.
-    * `VPC`: `desafio-wordpress-vpc`
-    * **Regras de Entrada (Inbound Rules):**
-        * **MYSQL/Aurora (3306):** Permitir tráfego do `DesafioWordpressEC2SecurityGroup`.
-    * **Regras de Saída (Outbound Rules):**
-        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
+    * `Description`: Garantir que apenas as instâncias EC2 possam se comunicar com o banco de dados MySQL.
+    * `VPC`: `desafio-wordpress-vpc`
+    * **Regras de Entrada (Inbound Rules):**
+        * **MYSQL/Aurora (3306):** Permitir tráfego do `DesafioWordpressEC2SecurityGroup`.
+    * **Regras de Saída (Outbound Rules):**
+        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
 * `Name`: `DesafioWordpressEFSSecurityGroup`
-    * `Description`: Permitir que as instâncias EC2 acessem o sistema de arquivos compartilhado via NFS.
-    * `VPC`: `desafio-wordpress-vpc`
-    * **Regras de Entrada (Inbound Rules):**
-        * **NFS (2049):** Permitir tráfego do `DesafioWordpressEC2SecurityGroup`.
-    * **Regras de Saída (Outbound Rules):**
-        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
+    * `Description`: Permitir que as instâncias EC2 acessem o sistema de arquivos compartilhado via NFS.
+    * `VPC`: `desafio-wordpress-vpc`
+    * **Regras de Entrada (Inbound Rules):**
+        * **NFS (2049):** Permitir tráfego do `DesafioWordpressEC2SecurityGroup`.
+    * **Regras de Saída (Outbound Rules):**
+        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
 * `Name`: `DesafioWordpressBastionHostSecurityGroup`
-    * `Description`: Limitar o acesso SSH ao Bastion Host apenas ao seu endereço IP, protegendo a rede privada.
-    * `VPC`: `desafio-wordpress-vpc`
-    * **Regras de Entrada (Inbound Rules):**
-        * **SSH (22):** Permitir tráfego de `My IP`.
-    * **Regras de Saída (Outbound Rules):**
-        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
+    * `Description`: Limitar o acesso SSH ao Bastion Host apenas ao seu endereço IP, protegendo a rede privada.
+    * `VPC`: `desafio-wordpress-vpc`
+    * **Regras de Entrada (Inbound Rules):**
+        * **SSH (22):** Permitir tráfego de `My IP`.
+    * **Regras de Saída (Outbound Rules):**
+        * **All trafic:** Manter regra padrão que permite tráfego para `0.0.0.0/0`.
 
 ### 1.4. Criação e Configuração do Internet Gateway (IGW), NAT Gateways e Tabelas de Roteamento
 
 Nesta etapa, vamos configurar o acesso à internet para nossas sub-redes. O **Internet Gateway** permitirá a comunicação de entrada e saída para as sub-redes públicas, enquanto os **NAT Gateways** permitirão que as instâncias nas sub-redes privadas acessem a internet de forma segura.
 
 1. **Criação do Internet Gateway (IGW):**
-    * `Name`: `igw-desafio-wordpress`
-    * **Anexar à VPC** `desafio-wordpress-vpc`.
+    * `Name`: `igw-desafio-wordpress`
+    * **Anexar à VPC** `desafio-wordpress-vpc`.
 2. **Criação dos NAT Gateways:**
-    * `Name`: `nat-gateway-desafio-wordpress-1`
-        * `Subnet`: `subnet-wordpress-publica-1`
-        * `Connectivity type`: `Public`
-        * **Allocate Elastic IP**.
-    * `Name`: `nat-gateway-desafio-wordpress-2`
-        * `Subnet`: `subnet-wordpress-publica-2`
-        * `Connectivity type`: `Public`
-        * **Allocate Elastic IP**.
+    * `Name`: `nat-gateway-desafio-wordpress-1`
+        * `Subnet`: `subnet-wordpress-publica-1`
+        * `Connectivity type`: `Public`
+        * **Allocate Elastic IP**.
+    * `Name`: `nat-gateway-desafio-wordpress-2`
+        * `Subnet`: `subnet-wordpress-publica-2`
+        * `Connectivity type`: `Public`
+        * **Allocate Elastic IP**.
 3. **Criação da Tabela de Roteamento Pública:**
-    * `Name`: `rtb-desafio-wordpress-publica`
-    * `VPC`: `desafio-wordpress-vpc`.
-    * **Rotas:** Adicionar uma rota com `Destination: 0.0.0.0/0` e `Target: igw-desafio-wordpress`.
-    * **Associações de Sub-rede:** Associar a `subnet-wordpress-publica-1` e `subnet-wordpress-publica-2`.
+    * `Name`: `rtb-desafio-wordpress-publica`
+    * `VPC`: `desafio-wordpress-vpc`.
+    * **Rotas:** Adicionar uma rota com `Destination: 0.0.0.0/0` e `Target: igw-desafio-wordpress`.
+    * **Associações de Sub-rede:** Associar a `subnet-wordpress-publica-1` e `subnet-wordpress-publica-2`.
 4. **Criação das Tabelas de Roteamento Privadas:**
-    * `Name`: `rtb-desafio-wordpress-privada-1`
-    * `VPC`: `desafio-wordpress-vpc`.
-    * **Rotas:** Adicionar uma rota com `Destination: 0.0.0.0/0` e `Target: nat-gateway-desafio-wordpress-1`.
-    * **Associações de Sub-rede:** Associar à `subnet-wordpress-privada-1`.
-    * `Name`: `rtb-desafio-wordpress-privada-2`
-    * `VPC`: `desafio-wordpress-vpc`.
-    * **Rotas:** Adicionar uma rota com `Destination: 0.0.0.0/0` e `Target: nat-gateway-desafio-wordpress-2`.
-    * **Associações de Sub-rede:** Associar à `subnet-wordpress-privada-2`.
+    * `Name`: `rtb-desafio-wordpress-privada-1`
+    * `VPC`: `desafio-wordpress-vpc`.
+    * **Rotas:** Adicionar uma rota com `Destination: 0.0.0.0/0` e `Target: nat-gateway-desafio-wordpress-1`.
+    * **Associações de Sub-rede:** Associar à `subnet-wordpress-privada-1`.
+    * `Name`: `rtb-desafio-wordpress-privada-2`
+    * `VPC`: `desafio-wordpress-vpc`.
+    * **Rotas:** Adicionar uma rota com `Destination: 0.0.0.0/0` e `Target: nat-gateway-desafio-wordpress-2`.
+    * **Associações de Sub-rede:** Associar à `subnet-wordpress-privada-2`.
 
 ## 2. Criação do Banco de Dados (RDS)
 
