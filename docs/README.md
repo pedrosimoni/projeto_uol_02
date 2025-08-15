@@ -7,6 +7,10 @@
 
 O objetivo deste projeto é configurar uma infraestrutura robusta e escalável na Amazon Web Services (AWS) para hospedar uma aplicação web WordPress. A solução será construída com base em uma arquitetura de microsserviços usando **Docker**, garantindo alta disponibilidade, escalabilidade automática e segurança. A arquitetura se baseará em um **Application Load Balancer (ALB)** para distribuir o tráfego, um **Auto Scaling Group (ASG)** para gerenciar a escalabilidade das instâncias **EC2**, um banco de dados **RDS** para persistência de dados e um **Elastic File System (EFS)** para o armazenamento compartilhado dos arquivos do WordPress. A rede será isolada em uma **Virtual Private Cloud (VPC)**, com sub-redes públicas e privadas, e a segurança será gerenciada por meio de **Security Groups (SGs)** e um **Bastion Host**.
 
+O diagrama do objetivo do projeto é o seguinte:
+
+![Objetivo do projeto](../img/diagrama.png)
+
 ## Tecnologias Utilizadas
 
 * **Amazon Web Services (AWS)**
@@ -197,33 +201,31 @@ Nesta seção, vamos configurar a parte principal do nosso ambiente escalável. 
 
 ### 4.1. IAM Role Secrets Manger e Launch Template
 
-Vamos começar configurando um **IAM Role** para que as instâncias EC2 possam se conectar ao EFS e, em seguida, criar o **Launch Template** que servirá de base para o nosso Auto Scaling Group.
+Vamos começar configurando um **IAM Role** para que as instâncias EC2 possam se conectar ao EFS. Além disso, para que nosso **User Data** funcione precisamos dar permissão para a **EC2** *descrever AZs disponíveis*, *buscar nossas senhas guardadas na aws*, *descrever os bancos disponíveis* e *descrever os EFS disponíveis*. Em seguida, vamos criar o **Launch Template** que servirá de base para o nosso Auto Scaling Group.
 
 1.  **IAM Role**
     * `Trusted entity type`: `AWS service`
     * `Service or use case`: `EC2`
     * `Permissions policies`: `AmazonElasticFileSystemClientReadWriteAccess`
-    * `Role name`: `EC2-EFS-Role`
+    * `Role name`: `EC2-Wordpress-Role`
+    * `Description`: `Allows EC2 instances to call AWS services on your behalf.`
     * **Após a criação adicione as permissões (Create inline policy):**
-        * **EFS-ReadWrite**
+        * **EC2-DescribeAZ**
             * `Service`: `EC2`
             * `Action`: `DescribeAvailabilityZones`
-            * `Policy name`: `EFS-ReadWrite`
         * **SM-GetSecret**
             * `Service`: `Secrets Manager`
             * `Action`: `GetSecretValue`
-            * `Policy name`: `SM-GetSecret`
             * `Resources`: **All**
         * **RDS-DBInstances**
             * `Service`: `RDS`
             * `Action`: `DescribeDBInstances`
-            * `Policy name`: `RDS-DBInstances`
             * `Resources`: **All**
         * **EFS-DescribeFS**
             * `Service`: `EFS`
             * `Action`: `DescribeFileSystems`
-            * `Policy name`: `EFS-DescribeFS`
             * `Resources`: **All**
+        * `Policy name`: `EC2CustomPolicy`
 
 2. **Secrets Manager**
     * `Secret type`: **Credentials for Amazon RDS database**
@@ -245,13 +247,13 @@ Vamos começar configurando um **IAM Role** para que as instâncias EC2 possam s
     * `Network settings`
         * `Subnet`: **não vamos configurar nenhuma subnet por agora.**
         * `Common security groups`: `DesafioWordpressEC2SecurityGroup`
-    * `Resource tags`:
+    * `Resource tags` (lembre-se de selecionar tanto instâncias quanto volumes no ***resource types***):
         * `Name`: `WordpressServer`
         * `CostCenter`: `**********`
         * `Project`: `PB - JUN 2025`
     * `Advance details`
-        * `IAM instance profile`: `EC2-EFS-Role`
-        * `User data`: **adicione e configure corretamente o user data, garantindo a instalação do Docker e a conexão com o EFS e RDS.**
+        * `IAM instance profile`: `EC2-Wordpress-Role`
+        * `User data`: **Adicione e configure corretamente o user data, garantindo a instalação do Docker e a conexão com o EFS e RDS. Nesse exemplo vamos usar o arquivo desse repositório `user-data.bash`**
 
 ### 4.2. App Load Balancer (ALB)
 
@@ -265,6 +267,9 @@ Vamos primeiro criar um **Target Group** para facilitar a configuração do Appl
     * `VPC`: `desafio-wordpress-vpc`
     * `Health check protocol`: `HTTP`
     * `Health check path`: `/`
+    * **Advanced health check settings:**
+        * `Success codes`: `200,302`
+
 2.  **Application Load Balancer**
     * `Name`: `WordpressALB`
     * `Scheme`: `Internet-facing`
@@ -288,7 +293,7 @@ O **Auto Scaling Group** utilizará o Launch Template para iniciar as instância
     * `Load balancing`: `Attach to an existing load balancer`
         * `WordpressTG`
     * `Turn on Elastic Load Balancing health checks`: `Enabled`
-    * `Health check grace period`: `30 segundos`
+    * `Health check grace period`: `300 segundos`
 * **Configure group size and scaling**
     * `Desired capacity`: `2`
     * `Min desired capacity`: `1`
@@ -303,7 +308,7 @@ O **Auto Scaling Group** utilizará o Launch Template para iniciar as instância
 
 Vamos criar um **Bastion Host** para permitir um acesso seguro via SSH às instâncias EC2 privadas, sem expor essas máquinas à internet.
 
-* `Tags`:
+* `Tags`(lembre-se de selecionar tanto instâncias quanto volumes no ***resource types***):
     * `Name`: `WordpressBastionHost`
     * `CostCenter`: `**********`
     * `Project`: `PB - JUN 2025`
@@ -328,9 +333,42 @@ Para finalizar a configuração, é essencial validar a comunicação entre todo
 1.  **Verifique a saúde das instâncias:** Após a criação do Auto Scaling Group, verifique se as instâncias EC2 estão saudáveis e se comunicam corretamente com o EFS e o RDS.
 2.  **Teste o acesso via Bastion Host:** Conecte-se ao Bastion Host via SSH e, a partir dele, acesse uma das instâncias EC2 privadas para verificar a comunicação interna e a instalação dos serviços.
 3.  **Acesse a aplicação:** Obtenha o DNS do Application Load Balancer e acesse o site. A página de configuração do WordPress deve aparecer.
-4.  **Finalize a configuração do WordPress:** Complete a instalação do WordPress utilizando os detalhes de acesso ao banco de dados (endpoint do RDS, nome do banco de dados, usuário e senha) criados anteriormente.
+4.  **Finalize a configuração do WordPress:** Complete a instalação do WordPress criando o seu usuário padrão e entrando tanto no painel do adm quanto verificando o site template.
 
 ---
 
-## 7. Condiderações Finais e Funcionamento
+## 7. Funcionamento e Considerações Finais
 
+Stack referente à criação das seções [1](#1-configuração-da-rede), [2](#2-criação-do-banco-de-dados-rds) e [3](#3-criação-do-elastic-file-system-efs):
+
+![Stack de metade do projeto](../img/stack.png)
+
+Target group verificando os status das máquinas e do nosso site Wordpress rodando dentro dos container:
+
+![Target Group](../img/target-group.png)
+
+Instâncias rodando:
+
+![Instâncias](../img/instancias.png)
+
+Conectando na Bastion Host e no Wordpress Server e verificando o container rodando:
+
+![Bastion Host Teste](../img/bastion-host.png)
+
+Testando derrubar o container:
+
+![Derrubando](../img/derrubando.png)
+![Instância Unhealthy](../img/unhealthy.png)
+
+Substituída:
+![Instância substituída](../img/substituicao.png)
+
+Login ainda funcionando, já que o nosso file system e banco são compartilhados:
+
+![Login](../img/login.png)
+
+### 7.1 Considerações Finais:
+
+Esse projeto permite a prática com soluções robustas utilizando os serviços AWS, montando uma estrutura segura, resiliente e que faz o próprio auto reparo, permitindo uma acessibilidade e disponibilidade altas. Além disso, traz uma boa base para resolução de problemas e sistemas Linux.
+
+***Lembrete importante***: Para evitar custos, não se esqueça de apagar todos os recursos que foram criados para este projeto depois de usar. Verifique os custos diariamente no Cost Explorer para evitar custos indesejados.
