@@ -360,8 +360,8 @@ Testando derrubar o container:
 ![Derrubando](../img/derrubando.png)
 ![Instância Unhealthy](../img/unhealthy.png)
 
-Substituída:
-![Instância substituída](../img/substituicao.png)
+Substituida:
+![Instância substituida](../img/substituicao.png)
 
 Login ainda funcionando, já que o nosso file system e banco são compartilhados:
 
