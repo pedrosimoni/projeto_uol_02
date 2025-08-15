@@ -367,8 +367,17 @@ Login ainda funcionando, já que o nosso file system e banco são compartilhados
 
 ![Login](../img/login.png)
 
+Depois de rodar o script para testar o stress da CPU:
+
+![Stress CPU](../img/cpu.png)
+![Stress Top](../img/top.png)
+![ASG Working](../img/replaced.png)
+
+
 ### 7.1 Considerações Finais:
 
 Esse projeto permite a prática com soluções robustas utilizando os serviços AWS, montando uma estrutura segura, resiliente e que faz o próprio auto reparo, permitindo uma acessibilidade e disponibilidade altas. Além disso, traz uma boa base para resolução de problemas e sistemas Linux.
+
+No mais é interessante ressaltar que para modo de teste/desenvolvimento o projeto é ótimo porém para projetos de produção seria interessante manter mais máquinas ativas ao mesmo tempo (dado a demora da resposta da aws aos nossos testes), além de manter o App Load Balancer mais próximo dos nosso clientes e não em qualquer área.
 
 ***Lembrete importante***: Para evitar custos, não se esqueça de apagar todos os recursos que foram criados para este projeto depois de usar. Verifique os custos diariamente no Cost Explorer para evitar custos indesejados.
